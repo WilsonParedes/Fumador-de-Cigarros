@@ -244,38 +244,14 @@ public:
 
 	}
 
-	/*PROCEDIMIENTO UTILIZADO PARA ASIGNARLE HIJOS A LOS PROCESOS, ESTO TOMANDO COMO PREMISA EL ORDEN DE PRIORIODAD PARA IR INCREMENTANDO EN UNO A 
-	LOS HIJOS EN CADA PROCESO PRINCIPAL
-	void crearHijosalosProcesos() {
-		int contenedor = 0;
-		int tiempo = 0;
-		int tiempohijos = 0;
-		int contador = 0;
-		for (int i = 0; i < ContenedorTXT.size(); i++) {
-			contador = 0;
-			contenedor = (i + 1) + 1;
-			ContenedorTXT[i].setHijoPendiente(contenedor);
-			tiempo = atoi(ContenedorTXT[i].getTiempoEjecucion().c_str());
-			agregarProceso(BitacoraP::BitacoraP(ContenedorTXT[i].getNoProceso(), ContenedorTXT[i].getTemaEjecucion(), ContenedorTXT[i].getPrioridadProceso(), ContenedorTXT[i].getPaternidad(), ContenedorTXT[i].getTiempoEjecucion(), ContenedorTXT[i].getTiempoEjecucion(), ContenedorTXT[i].getEstadoProceso(), contenedor, ContenedorTXT[i].getEnumInsumos()));
-			for (int j = 0; j < contenedor; j++) {
-				tiempohijos = tiempo / contenedor;
-				contador += 1;
-				agregarProceso(BitacoraP::BitacoraP(ContenedorTXT[i].getNoProceso(), " -> HIJO " + to_string(contador), ContenedorTXT[i].getPrioridadProceso(), ContenedorTXT[i].getPaternidad(), to_string(tiempohijos), to_string(tiempohijos), "NUEVO", contenedor, ContenedorTXT[i].getEnumInsumos()));
-				agregarProcesoAuxiliar(BitacoraP::BitacoraP(ContenedorTXT[i].getNoProceso(), " -> HIJO " + to_string(contador), ContenedorTXT[i].getPrioridadProceso(), ContenedorTXT[i].getPaternidad(), to_string(tiempohijos), to_string(tiempohijos), "NUEVO", contenedor, ContenedorTXT[i].getEnumInsumos()));
-			}
-		}
-		SE LLAMA AL PROCEDIMIENTO PARA IMPRIMIR EN PANTALLA LOS PROCESOS Y LOS HIJOS
-		mostrarProcesos();
-		cout << endl;
-	}*/
 
-
-	
 
 	/*ESTE PROCEDIMIENTO, SERÁ EL ENCARGADO DE REALIZAR LA ASIGNACIÓN DE INSUMOS DE CADA PROCESO, YA QUE NO SE PODRÁN EJECUTAR POR ORDEN DE
 	PRIORIDAD, SINO QUE POR INSUMOS ASIGNADOS*/
 	void AgenteColocaInsumos() {
-		
+		system("cls");
+		cout << "EL AGENTE ESTA GENERANDO DOS INSUMOS DE FORMA ALEATORIA\n";
+
 		if (conteGlobal > 4) {
 			limpiarInsumos();
 			conteGlobal = 0;
@@ -283,23 +259,18 @@ public:
 		}
 		else {
 			//limpiarInsumos();
-			cout << "EL AGENTE ESTA GENERANDO DOS INSUMOS DE FORMA ALEATORIA\n";
+			
 			string insumo, tempInsumo = "";
 			if (!Insumos.empty()) {
 				for (int i = 1; i < 2; i++) {
 					insumo = GeneraNumeroAleatorio();
 					if (insumo._Equal(insumoGloblal)) {
-						//Sleep(800);
-						system("cls");
+						Sleep(500);
 						AgenteColocaInsumos();
-
 					}
 					else {
-						//Sleep(500);
-						system("cls");
+						Sleep(500);
 						agregarInsumos(insumo);/*VECTOR INSUMOS*/
-						
-
 					}
 				}
 			}
@@ -307,16 +278,14 @@ public:
 				for (int i = 0; i < 2; i++) {
 					insumo = GeneraNumeroAleatorio();
 					if (insumo._Equal(tempInsumo)) {
-						//Sleep(800);
-						system("cls");
+						Sleep(500);
 						limpiarInsumos();
 						AgenteColocaInsumos();
 
 					}
 					else {
-						//Sleep(500);
+						Sleep(500);
 						tempInsumo = insumo;
-						system("cls");
 						agregarInsumos(insumo);/*VECTOR INSUMOS*/
 						
 					}
@@ -389,12 +358,10 @@ public:
 
 	/*ESTE ALGORITMO ES LA LÓGICA CENTRAL DEL PROGRAMA, EJECUTRÁ POR VEZ, CADA PROCESOS DEPENDIENDO DE LOS INSUMOS QUE GENERÉ EL AGENTE*/
 	void ControlDeProcesamientoCentral() {
-		while (!almacen.empty()) {
+		while (!almacen.size()==0) {
 			int posicion = 0;
 			do {
 				AgenteColocaInsumos(); /*EL AGENTE GENERA INSUMOS Y LOS ALMACENA EN EL VECTOR INSUMOS*/
-				mostrarProcesos();
-				
 				conteGlobal++;
 				posicion = UbicaciondeProcesoqueseejecuta(); /*SE BUSCA LA POSICIÓN DEL PROCESO DENTRO DEL VECTOR CONTENEDORTXT DONDE ESTA EL INSUMO FALTANTE*/
 			} while (posicion == -2);
@@ -406,7 +373,6 @@ public:
 			int prioridad = 0;
 			int tiempoacumulado = 0;
 			int tiemporestante = 0;
-			int hijopendiente = 0;
 			int dormir = 1000;
 			string temporal;
 
@@ -429,44 +395,85 @@ public:
 							/*SE AGREGA A LA BITACORA EL ESTADO LISTO*/
 							agregarProcesoaContenedorTXT(BitacoraP::BitacoraP(almacen[i].getNoProceso(), almacen[i].getTemaEjecucion(), almacen[i].getPrioridadProceso(), almacen[i].getTiempoEjecucion(), almacen[i].getTiempoEjecucion(), "LISTO", almacen[i].getHijoPendiente(), almacen[i].getEnumInsumos()));
 							mostrarProcesos();/*SE MUESTRAN PROCESOS PENDIENTES*/
-
 							almacen[i].setEstadoProceso("LISTO"); /*SE CAMBIA EL ESTADO DEL PROCESO PENDIENTE*/
 							mostrarProcesos();
-							cout << "\nCARGANDO PROCESO AL CPU\n" << endl; /*SE CARGA EL PROCESO*/
-							Sleep(2000);
-							almacen[i].setEstadoProceso("EJECUCIÓN");
-							casteo2 = atoi(temporal.c_str());
-							//casteo2 = atoi(temporal.c_str() - atoi(temporal.c_str()));//tiempo restante
-							agregarProcesoaContenedorTXT(BitacoraP::BitacoraP(almacen[i].getNoProceso(), almacen[i].getTemaEjecucion(), almacen[i].getPrioridadProceso(), almacen[i].getTiempoEjecucion(), almacen[i].getTiempoEjecucion(), "EJECUCIÓN", almacen[i].getHijoPendiente(), almacen[i].getEnumInsumos()));
+							if (casteo>20) {
+								cout << "\nCARGANDO PROCESO AL CPU MAYOR 20 SEGUNDOS\n" << endl; /*SE CARGA EL PROCESO*/
+								Sleep(2000);
+								almacen[i].setEstadoProceso("EJECUCIÓN");
+								casteo2 = atoi(temporal.c_str());
+								//casteo2 = atoi(temporal.c_str() - atoi(temporal.c_str()));//tiempo restante
+								agregarProcesoaContenedorTXT(BitacoraP::BitacoraP(almacen[i].getNoProceso(), almacen[i].getTemaEjecucion(), almacen[i].getPrioridadProceso(), almacen[i].getTiempoEjecucion(), almacen[i].getTiempoEjecucion(), "EJECUCION", almacen[i].getHijoPendiente(), almacen[i].getEnumInsumos()));
 
-							/*SE AGREGA EL ESTADO EN LA BITACORA*/
-							if (casteo <= 0) {
-								casteo = 1;
-								dormir = 1000;
-							}
-
-
-							for (int k = 0; k < casteo; k++) {
-								cout << "\n\nINSUMOS EN LA MESA:\n";
-								MostrarInsumos(); /*SE IMPRIME EN CONSOLA LO QUE CONTIENE EL VECTOR INSUMOS */
-								cout << endl << "\n\nSE ESTA EJECUTANDO EL PROCESO PRINCIAPL " + almacen[i].getNoProceso() + " : --> ";
-								cout << (k + 1);
-								casteo2--;
+								/*SE AGREGA EL ESTADO EN LA BITACORA*/
+								if (casteo <= 0) {
+									casteo = 1;
+									dormir = 1000;
+								}
+								for (int k = 0; k < 20; k++) {
+									cout << "\n\nINSUMOS EN LA MESA:\n";
+									MostrarInsumos(); /*SE IMPRIME EN CONSOLA LO QUE CONTIENE EL VECTOR INSUMOS */
+									cout << endl << "\n\nSE ESTA EJECUTANDO EL PROCESO PRINCIAPL " + almacen[i].getNoProceso() + " : --> ";
+									cout << (k + 1);
+									casteo2--;
+									almacen[i].setTiempoPendiente(to_string(casteo2));
+									Sleep(dormir);
+									mostrarProcesos();
+								}
+								almacen[i].setTiempoEjecucion(to_string(casteo2));
+								cout << endl << "PROCESO           --> " + almacen[i].getNoProceso() + " \nTIEMPO PENDIENTE  --> " << almacen[i].getTiempoPendiente() + "\nTIEMPO EJECUTADO  --> 20" +  "\nESTADO            --> BLOQUEADO" + "\nSE DEJA INSUMO    --> " + almacen[i].getEnumInsumos() << endl;
+								//Sleep(4000);
+								system("pause");
+								system("cls");
+								agregarProcesoaContenedorTXT(BitacoraP::BitacoraP(almacen[i].getNoProceso(), almacen[i].getTemaEjecucion(), almacen[i].getPrioridadProceso(), almacen[i].getTiempoEjecucion(), almacen[i].getTiempoPendiente(), "BLOQUEADO", almacen[i].getHijoPendiente(), almacen[i].getEnumInsumos()));
+								agregarProceso(BitacoraP::BitacoraP(almacen[i].getNoProceso(), almacen[i].getTemaEjecucion(), almacen[i].getPrioridadProceso(), almacen[i].getTiempoEjecucion(), almacen[i].getTiempoPendiente(), "BLOQUEADO", almacen[i].getHijoPendiente(), almacen[i].getEnumInsumos()));
+								almacen[i].setEstadoProceso("BLOQUEADO");
 								almacen[i].setTiempoPendiente(to_string(casteo2));
-								Sleep(dormir);
 								mostrarProcesos();
+								insumoGloblal = almacen[i].getEnumInsumos();
+								limpiarInsumos();
+								agregarInsumos(insumoGloblal);
+								EliminarElementoVectorAlmacen(posicion - 1);
 							}
-							cout << endl << "PROCESO           --> " + almacen[i].getNoProceso() + " \nTIEMPO PENDIENTE  --> " << almacen[i].getTiempoPendiente() + "\nTIEMPO EJECUTADO  --> " + almacen[i].getTiempoEjecucion() + "\nESTADO            --> TERMINADO" + "\nSE DEJA INSUMO    --> " +almacen[i].getEnumInsumos()<< endl;
-							Sleep(4000);
-							system("cls");
-							agregarProcesoaContenedorTXT(BitacoraP::BitacoraP(almacen[i].getNoProceso(), almacen[i].getTemaEjecucion(), almacen[i].getPrioridadProceso(), almacen[i].getTiempoEjecucion(), almacen[i].getTiempoPendiente(), "TERMINADO", almacen[i].getHijoPendiente(), almacen[i].getEnumInsumos()));
-							almacen[i].setEstadoProceso("TERMINADO");
-							almacen[i].setTiempoPendiente(to_string(casteo2));
-							mostrarProcesos();
-							insumoGloblal = almacen[i].getEnumInsumos();
-							limpiarInsumos();
-							agregarInsumos(insumoGloblal);
-							EliminarElementoVectorAlmacen(posicion - 1);
+							else {
+								
+								cout << "\nCARGANDO PROCESO AL CPU\n" << endl; /*SE CARGA EL PROCESO*/
+								Sleep(2000);
+								almacen[i].setEstadoProceso("EJECUCIÓN");
+								casteo2 = atoi(temporal.c_str());
+								//casteo2 = atoi(temporal.c_str() - atoi(temporal.c_str()));//tiempo restante
+								agregarProcesoaContenedorTXT(BitacoraP::BitacoraP(almacen[i].getNoProceso(), almacen[i].getTemaEjecucion(), almacen[i].getPrioridadProceso(), almacen[i].getTiempoEjecucion(), almacen[i].getTiempoEjecucion(), "EJECUCIÓN", almacen[i].getHijoPendiente(), almacen[i].getEnumInsumos()));
+
+								/*SE AGREGA EL ESTADO EN LA BITACORA*/
+								if (casteo <= 0) {
+									casteo = 1;
+									dormir = 1000;
+								}
+								for (int k = 0; k < casteo; k++) {
+									cout << "\n\nINSUMOS EN LA MESA:\n";
+									MostrarInsumos(); /*SE IMPRIME EN CONSOLA LO QUE CONTIENE EL VECTOR INSUMOS */
+									cout << endl << "\n\nSE ESTA EJECUTANDO EL PROCESO PRINCIAPL " + almacen[i].getNoProceso() + " : --> ";
+									cout << (k + 1);
+									casteo2--;
+									almacen[i].setTiempoPendiente(to_string(casteo2));
+									Sleep(dormir);
+									mostrarProcesos();
+								}
+								cout << endl << "PROCESO           --> " + almacen[i].getNoProceso() + " \nTIEMPO PENDIENTE  --> " << almacen[i].getTiempoPendiente() + "\nTIEMPO EJECUTADO  --> " + almacen[i].getTiempoEjecucion() + "\nESTADO            --> TERMINADO" + "\nSE DEJA INSUMO    --> " + almacen[i].getEnumInsumos() << endl;
+
+								system("pause");
+								//Sleep(4000);
+								system("cls");
+								agregarProcesoaContenedorTXT(BitacoraP::BitacoraP(almacen[i].getNoProceso(), almacen[i].getTemaEjecucion(), almacen[i].getPrioridadProceso(), almacen[i].getTiempoEjecucion(), almacen[i].getTiempoPendiente(), "TERMINADO", almacen[i].getHijoPendiente(), almacen[i].getEnumInsumos()));
+								almacen[i].setEstadoProceso("TERMINADO");
+								almacen[i].setTiempoPendiente(to_string(casteo2));
+								mostrarProcesos();
+								insumoGloblal = almacen[i].getEnumInsumos();
+								limpiarInsumos();
+								agregarInsumos(insumoGloblal);
+								EliminarElementoVectorAlmacen(posicion - 1);
+							}
+							
 
 
 						}/*SE AGREAGA A LA BITACORA EL ESTADO EJECUCIÓN*/
@@ -475,112 +482,13 @@ public:
 						}
 
 
-						/*
-						agregarProcesoaContenedorTXT(BitacoraP::BitacoraP(almacen[i].getNoProceso(), almacen[i].getTemaEjecucion(), almacen[i].getPrioridadProceso(), almacen[i].getTiempoEjecucion(), almacen[i].getTiempoEjecucion(), "TERMINADO", almacen[i].getHijoPendiente(), almacen[i].getEnumInsumos()));
-						almacen[i].setEstadoProceso("TERMINADO");
-						mostrarProcesos();
-						Sleep(1000);
-						EliminarElementoVectorAlmacen(posicion-1);*/
-					}/*
+						
+					} 
 
-						k = 0;
-						if (casteo > 20) {
-							int contador = 0;
-							int tiempohijos = 0;
-							int tiemporestantehijo = 0;
-							mostrarProcesosContenedroTXT();-------
-							cout << "Cargando Proceso al CPU" << endl;---------
-							Sleep(1500);--------
-							ContenedorTXT[i].setEstadoProceso("EJECUCION");----------
-							mostrarProcesosContenedroTXT();------
-							Sleep(1500);-----------
-							casteo2 = atoi(temporal.c_str() - 20);//tiempo restante
-							ContenedorTXT[i].setTiempoPendiente(to_string(casteo2));//se pasa el tiempo por parametro
-							//prioridad = (atoi(ContenedorTXT[i].getPrioridadProceso().c_str()) + 1) + 1;
-							prioridad = ContenedorTXT[i].getHijoPendiente();
-							cout << endl << "El proceso principal es : " << ContenedorTXT[i].getNoProceso() << " tiempo requerido en CPU: " << ContenedorTXT[i].getTiempoEjecucion() << endl;
-							for (int l = 0; l < prioridad; l++) {
-								if (tiemporestantehijo >= 20) {
-									casteo2 = atoi(temporal.c_str()) - tiemporestantehijo;
-									ContenedorTXT[i].setTiempoPendiente(to_string(casteo2));
-									ContenedorTXT[i].setEstadoProceso("EJECUCION");
-									cout << endl << "Proceso Bloqueado, Tiempo restante : " << to_string(casteo2) << endl;
-									cout << endl;
-									agregarProceso(BitacoraP::BitacoraP(ContenedorTXTAuxiliar[l].getNoProceso(), ContenedorTXTAuxiliar[l].getTemaEjecucion(), ContenedorTXTAuxiliar[l].getPrioridadProceso(), ContenedorTXTAuxiliar[l].getPaternidad(), ContenedorTXTAuxiliar[l].getTiempoEjecucion(), ContenedorTXTAuxiliar[l].getTiempoPendiente(), "BLOQUEADO", hijopendiente));
-									agregarProceso(BitacoraP::BitacoraP(ContenedorTXT[i].getNoProceso(), ContenedorTXT[i].getTemaEjecucion(), ContenedorTXT[i].getPrioridadProceso(), ContenedorTXT[i].getPaternidad(), ContenedorTXT[i].getTiempoEjecucion(), ContenedorTXT[i].getTiempoPendiente(), "BLOQUEADO", hijopendiente));
-									ProcesoParaEliminarHijos(contador);
-									for (int k = 0; k < (prioridad - contador); k++) {
-										agregarProcesoAuxiliar(BitacoraP::BitacoraP(ContenedorTXTAuxiliar[0].getNoProceso(), ContenedorTXTAuxiliar[0].getTemaEjecucion(), ContenedorTXTAuxiliar[0].getPrioridadProceso(), ContenedorTXTAuxiliar[0].getPaternidad(), ContenedorTXTAuxiliar[0].getTiempoEjecucion(), ContenedorTXTAuxiliar[0].getTiempoPendiente(), "BLOQUEADO", ContenedorTXTAuxiliar[0].getHijoPendiente()));
-										ProcesoParaEliminarHijos(1);
-									}
-									ContenedorTXT[i].setEstadoProceso("BLOQUEADO");
-
-									if ((ContenedorTXTAuxiliar.size()) == 0) {
-									}
-									else {
-										salida = true;
-									}
-								}
-								else {
-									contador++;
-									hijopendiente = prioridad - contador;
-									ContenedorTXT[i].setHijoPendiente(hijopendiente);
-									ContenedorTXTAuxiliar[l].setHijoPendiente(hijopendiente);
-									agregarProceso(BitacoraP::BitacoraP(ContenedorTXTAuxiliar[l].getNoProceso(), ContenedorTXTAuxiliar[l].getTemaEjecucion(), ContenedorTXTAuxiliar[l].getPrioridadProceso(), ContenedorTXTAuxiliar[l].getPaternidad(), ContenedorTXTAuxiliar[l].getTiempoEjecucion(), ContenedorTXTAuxiliar[l].getTiempoPendiente(), "LISTO", ContenedorTXTAuxiliar[l].getHijoPendiente()));
-									cout << endl << "se esta ejecucantdo el proceso hijo " + to_string(contador) + " : --> ";
-									tiempohijos = atoi(ContenedorTXTAuxiliar[l].getTiempoEjecucion().c_str());
-									agregarProceso(BitacoraP::BitacoraP(ContenedorTXTAuxiliar[l].getNoProceso(), ContenedorTXTAuxiliar[l].getTemaEjecucion(), ContenedorTXTAuxiliar[l].getPrioridadProceso(), ContenedorTXTAuxiliar[l].getPaternidad(), ContenedorTXTAuxiliar[l].getTiempoEjecucion(), ContenedorTXTAuxiliar[l].getTiempoPendiente(), "EJECUCION", ContenedorTXTAuxiliar[l].getHijoPendiente()));
-									if (tiempohijos < 0) {
-										tiempohijos = 1;
-									}
-									for (int k = 0; k < tiempohijos; k++) {
-										cout << (k + 1) << " ";
-										Sleep(1000);
-									}
-									cout << endl << "Proceso hijo " + to_string(contador) + " Terminado : " << ContenedorTXTAuxiliar[l].getTiempoEjecucion() << endl;
-									cout << endl;
-									agregarProceso(BitacoraP::BitacoraP(ContenedorTXTAuxiliar[l].getNoProceso(), ContenedorTXTAuxiliar[l].getTemaEjecucion(), ContenedorTXTAuxiliar[l].getPrioridadProceso(), ContenedorTXTAuxiliar[l].getPaternidad(), ContenedorTXTAuxiliar[l].getTiempoEjecucion(), ContenedorTXTAuxiliar[l].getTiempoPendiente(), "TERMINADO", ContenedorTXTAuxiliar[l].getHijoPendiente()));
-									ContenedorTXTAuxiliar[l].setEstadoProceso("TERMINADO");
-									ContenedorTXT[i].setEstadoProceso("TERMINADO");
-									tiemporestantehijo += tiempohijos;
-								}
-							}
-						}
-						else {
-							if (casteo <= 20) {
-								if ((atoi(ContenedorTXT[i].getTiempoPendiente().c_str()) == 0)) {
-								}
-								else {
-									mostrarProcesosContenedroTXT();
-									cout << "Cargando Proceso al CPU" << endl;
-									Sleep(1500);
-									ContenedorTXT[i].setEstadoProceso("EJECUCION");
-									mostrarProcesosContenedroTXT();
-									Sleep(1500);
-									casteo2 = atoi(temporal.c_str() - atoi(temporal.c_str()));//tiempo restante
-									ContenedorTXT[i].setTiempoPendiente(to_string(casteo2));//se pasa el tiempo por parametro
-
-									//prioridad = (atoi(ContenedorTXT[i].getPrioridadProceso().c_str()) + 1) + 1;
-									prioridad = ContenedorTXT[i].getHijoPendiente();
-									cout << endl << "El proceso principal es : " << ContenedorTXT[i].getNoProceso() << " tiempo requerido en CPU: " << ContenedorTXT[i].getTiempoEjecucion() << endl;
-									PrioriodadProcesoCorto(casteo2, temporal, prioridad);/*Realiza el proceso corto*/
-									/*agregarProceso(BitacoraP::BitacoraP(ContenedorTXT[i].getNoProceso(), ContenedorTXT[i].getTemaEjecucion(), ContenedorTXT[i].getPrioridadProceso(), ContenedorTXT[i].getPaternidad(), ContenedorTXT[i].getTiempoEjecucion(), ContenedorTXT[i].getTiempoPendiente(), "EJECUCION", 0));
-									agregarProceso(BitacoraP::BitacoraP(ContenedorTXT[i].getNoProceso(), ContenedorTXT[i].getTemaEjecucion(), ContenedorTXT[i].getPrioridadProceso(), ContenedorTXT[i].getPaternidad(), ContenedorTXT[i].getTiempoEjecucion(), ContenedorTXT[i].getTiempoPendiente(), "TERMINADO", 0));
-									ContenedorTXT[i].setHijoPendiente(0);
-									ContenedorTXT[i].setEstadoProceso("TERMINADO");
-									ProcesoParaEliminarHijos(prioridad);
-								}
-							}
-						}*/
-
-				}
-				else {
 				}
 			}
 
 		}
-		
-
 	}
 
 

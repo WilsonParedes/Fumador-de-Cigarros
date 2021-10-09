@@ -22,7 +22,9 @@ int main() {
     do {
         op = 0;
         exit = false;
-        cout << "*****BIENVENIDO AL SIMULADOR PCB***** " << endl;
+        system("pause");
+        system("cls");
+        cout << "*****BIENVENIDO AL SIMULADOR FUMADORES DE CIGARROS***** " << endl;
         cout << "1--> LEER ARCHIVO " << endl;
         cout << "2--> ATENDER PROCESOS " << endl;
         cout << "3--> IMPRIMIR BITACORA " << endl;
